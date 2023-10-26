@@ -1,0 +1,17 @@
+{
+    "windowWidth":350,
+    "windowHeight":440,
+    "windowTitle": "Start Micro-Services",
+    "microServices" : [
+        {
+            "name": "Angular app",
+            "path": "",
+            "applicationType": "AngularApp"
+        },
+        {
+            "name": "Dotnet app",
+            "path": "",
+            "applicationType": "DotnetApp"
+        }
+    ]
+}
