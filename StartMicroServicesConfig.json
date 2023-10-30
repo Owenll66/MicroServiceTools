@@ -1,6 +1,4 @@
 {
-    "windowWidth":350,
-    "windowHeight":440,
     "windowTitle": "Start Micro-Services",
     "microServices" : [
         {

@@ -7,16 +7,6 @@ begin {
 
     $ErrorActionPreference = "Stop"
 
-    # Make unicode icons compatible
-    # https://stackoverflow.com/questions/77269886/winforms-in-powershell-not-able-to-display-unicode-character
-    try
-    {
-        [System.Windows.Forms.Application]::SetCompatibleTextRenderingDefault($false)
-    }
-    catch
-    {
-    }
-
     # https://stackoverflow.com/questions/55896492/terminate-process-tree-in-powershell-given-a-process-id
     function global:Stop-ProcessTree {
         Param([int]$ppid)
@@ -61,11 +51,13 @@ process {
     $form.Text =  $Config.WindowTitle
     $form.Font = New-Object System.Drawing.Font("Segoe UI", 9);
     $form.StartPosition = 'CenterScreen'
-    $form.Size = New-Object System.Drawing.Size($Config.WindowWidth,$Config.WindowHeight)
+
+    $windowHeight = 25 * $Config.MicroServices.Length + 100;
+    $form.Size = New-Object System.Drawing.Size(350, $windowHeight)
 
     $checkboxSize = New-Object System.Drawing.Size(130,25)
     
-    $yOffSet = 30
+    $yOffSet = 25
     $microServices = @{}
     for ($i = 0; $i -lt $Config.MicroServices.Length ; $i++)
     {
