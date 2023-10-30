@@ -100,7 +100,6 @@ process {
             if ($checkBox.Checked)
             {
                 $checkBox.BackColor = "PaleGreen"
-                Write-Host $releaseModeRadioButton.Checked
                 $runMode = If ($releaseModeRadioButton.Checked) { "Release" } Else { "Debug" }
                 $microServices[$Config.MicroServices[$i].Name] = Start-MicroService $Config.MicroServices[$i].Name $Config.MicroServices[$i].Path $Config.MicroServices[$i].ApplicationType $runMode
             }
