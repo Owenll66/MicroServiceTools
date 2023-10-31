@@ -48,62 +48,87 @@ process {
     $Config = (Get-Content $configFilePath | Out-String | ConvertFrom-Json)
 
     $form = New-Object System.Windows.Forms.Form
-    $form.Text =  $Config.WindowTitle
+    $form.Text =  $Config.windowTitle
     $form.Font = New-Object System.Drawing.Font("Segoe UI", 9);
     $form.StartPosition = 'CenterScreen'
 
-    $windowHeight = 25 * $Config.MicroServices.Length + 100;
-    $form.Size = New-Object System.Drawing.Size(350, $windowHeight)
+    $windowHeight = 25 * $Config.microServices.Length + 100;
+    $form.Size = New-Object System.Drawing.Size(480, $windowHeight)
 
     $checkboxSize = New-Object System.Drawing.Size(130,25)
+    $radioButtonSize = New-Object System.Drawing.Size(90,25)
     
     $yOffSet = 25
     $microServices = @{}
-    for ($i = 0; $i -lt $Config.MicroServices.Length ; $i++)
+    for ($i = 0; $i -lt $Config.microServices.Length ; $i++)
     {
-        if ($Config.MicroServices[$i].ApplicationType -eq "DotnetApp")
+        if ($Config.microServices[$i].ApplicationType -eq "DotnetApp")
         {
+            # Add options to chose run mode
             $panel = New-Object System.Windows.Forms.Panel
             $panel.Location = New-Object System.Drawing.Point(150, ($yOffSet - 5))
-            $panel.size = '135,25'
+            $panel.size = '280,25'
 
             $releaseModeRadioButton = New-Object System.Windows.Forms.RadioButton
             $releaseModeRadioButton.Location = '5,5'
-            $releaseModeRadioButton.size = '70,25'
+            $releaseModeRadioButton.size = $radioButtonSize
             $releaseModeRadioButton.Checked = $true 
-            $releaseModeRadioButton.Text = "Release"
+            $releaseModeRadioButton.Text = "Run Release"
 
             $debugModeRadioButton = New-Object System.Windows.Forms.RadioButton
-            $debugModeRadioButton.Location = '75,5'
-            $debugModeRadioButton.Text = "Debug"
+            $debugModeRadioButton.size = $radioButtonSize
+            $debugModeRadioButton.Location = '100,5'
+            $debugModeRadioButton.Text = "Run Debug"
+
+            $debugInVsRadioButton = New-Object System.Windows.Forms.RadioButton
+            $debugModeRadioButton.size = $radioButtonSize
+            $debugInVsRadioButton.Location = '190,5'
+            $debugInVsRadioButton.Text = "Debug in VS"
 
             $panel.Controls.Add($releaseModeRadioButton);
             $panel.Controls.Add($debugModeRadioButton);
+            $panel.Controls.Add($debugInVsRadioButton);
 
             $form.Controls.Add($panel)
         }
 
         $checkBox = New-Object System.Windows.Forms.CheckBox
         $checkBox.Appearance = 'Button'
-        $checkBox.Text = $Config.MicroServices[$i].Name
+        $checkBox.Text = $Config.microServices[$i].Name
         $checkBox.Size = $checkboxSize
         $checkBox.Location = New-Object System.Drawing.Point(15, $yOffSet)
-        $clickEvent = {
+        $runAppEvent = {
             if ($checkBox.Checked)
             {
-                $checkBox.BackColor = "PaleGreen"
-                $runMode = If ($releaseModeRadioButton.Checked) { "Release" } Else { "Debug" }
-                $microServices[$Config.MicroServices[$i].Name] = Start-MicroService $Config.MicroServices[$i].Name $Config.MicroServices[$i].Path $Config.MicroServices[$i].ApplicationType $runMode
+                If ($releaseModeRadioButton.Checked)
+                { 
+                    $checkBox.BackColor = "PaleGreen"
+                    $microServices[$Config.microServices[$i].Name] = Start-MicroService $Config.microServices[$i].Name $Config.microServices[$i].Path $Config.microServices[$i].ApplicationType "Release"
+                } 
+                elseif ($debugModeRadioButton.Checked) 
+                {
+                    $checkBox.BackColor = "PaleGreen"
+                    $microServices[$Config.microServices[$i].Name] = Start-MicroService $Config.microServices[$i].Name $Config.microServices[$i].Path $Config.microServices[$i].ApplicationType "Debug"
+                }
+                elseif ($debugInVsRadioButton.Checked)
+                {
+                    $checkBox.Checked = $false;
+                    & "$($config.visualStudioPath)\Common7\IDE\devenv.exe" /Command "Debug.Start" /Run $Config.microServices[$i].Path
+                }
             }
             else
             {
                 $checkBox.BackColor = "Transparent"
-                Write-Host "Stopping $($Config.MicroServices[$i].Name)..."
-                Stop-ProcessTree $microServices[$Config.MicroServices[$i].Name].Id
+                Write-Host "Stopping $($Config.microServices[$i].Name)..."
+
+                if ($microServices[$Config.microServices[$i].Name] -ne $null)
+                {
+                    Stop-ProcessTree $microServices[$Config.microServices[$i].Name].Id
+                }
             }
         }.GetNewClosure()
 
-        $checkBox.Add_Click($clickEvent)
+        $checkBox.Add_Click($runAppEvent)
         $form.Controls.Add($checkBox)
 
         $yOffSet += 25;
