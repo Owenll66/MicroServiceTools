@@ -100,30 +100,29 @@ process {
         $runAppEvent = {
             if ($checkBox.Checked)
             {
+                $checkBox.BackColor = "PaleGreen"
                 If ($releaseModeRadioButton.Checked)
                 { 
-                    $checkBox.BackColor = "PaleGreen"
                     $microServices[$Config.microServices[$i].Name] = Start-MicroService $Config.microServices[$i].Name $Config.microServices[$i].Path $Config.microServices[$i].ApplicationType "Release"
                 } 
                 elseif ($debugModeRadioButton.Checked) 
                 {
-                    $checkBox.BackColor = "PaleGreen"
                     $microServices[$Config.microServices[$i].Name] = Start-MicroService $Config.microServices[$i].Name $Config.microServices[$i].Path $Config.microServices[$i].ApplicationType "Debug"
                 }
                 elseif ($debugInVsRadioButton.Checked)
                 {
-                    $checkBox.Checked = $false;
                     & "$($config.visualStudioPath)\Common7\IDE\devenv.exe" /Command "Debug.Start" /Run $Config.microServices[$i].Path
                 }
             }
             else
             {
                 $checkBox.BackColor = "Transparent"
-                Write-Host "Stopping $($Config.microServices[$i].Name)..."
-
+                
                 if ($microServices[$Config.microServices[$i].Name] -ne $null)
                 {
+                    Write-Host "Stopping $($Config.microServices[$i].Name)..."
                     Stop-ProcessTree $microServices[$Config.microServices[$i].Name].Id
+                    $microServices[$Config.microServices[$i].Name] = $null
                 }
             }
         }.GetNewClosure()
