@@ -1,4 +1,5 @@
 {
+    "visualStudioPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community",
     "windowTitle": "Start Micro-Services",
     "microServices" : [
         {
