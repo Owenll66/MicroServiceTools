@@ -16,6 +16,7 @@ begin {
         # in this case. Hence we need "-ErrorAction SilentlyContinue"
         Stop-Process -Id $ppid -ErrorAction SilentlyContinue
     }
+
     function global:Start-MicroService
     {
         param(
@@ -111,6 +112,7 @@ process {
                 }
                 elseif ($debugInVsRadioButton.Checked)
                 {
+                    Write-Host "Start Debugging $($Config.microServices[$i].Name) in Visual Studio..."
                     & "$($config.visualStudioPath)\Common7\IDE\devenv.exe" /Command "Debug.Start" /Run $Config.microServices[$i].Path
                 }
             }
@@ -140,4 +142,3 @@ process {
     Write-Host -NoNewLine 'Press any key to exit...'
     $null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown')
 }
-
