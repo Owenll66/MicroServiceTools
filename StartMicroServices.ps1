@@ -61,6 +61,7 @@ process {
     
     $yOffSet = 25
     $microServices = @{}
+
     for ($i = 0; $i -lt $Config.microServices.Length ; $i++)
     {
         if ($Config.microServices[$i].ApplicationType -eq "DotnetApp")
@@ -98,6 +99,7 @@ process {
         $checkBox.Text = $Config.microServices[$i].Name
         $checkBox.Size = $checkboxSize
         $checkBox.Location = New-Object System.Drawing.Point(15, $yOffSet)
+        
         $runAppEvent = {
             if ($checkBox.Checked)
             {
